@@ -30,26 +30,34 @@ source ~/.zshrc
 
 ### Option 2: Using the "go" command (Recommended)
 
-To make the script available globally as the `go` command, add this function to your shell configuration file (e.g., `.zshrc`):
+To make the script available globally as the `go` command, follow these simple steps:
 
-```bash
-# Add this to your ~/.zshrc file
-function go {
-  python3 "$HOME/Documents/Projects/scaffold/scaffold.py" "$@"
-}
-```
+1. **Ensure the wrapper script is executable**:
+   ```bash
+   chmod +x ~/Documents/Projects/scaffold/go
+   ```
 
-Then reload your shell configuration:
+2. **Add a single alias to your shell configuration file** (e.g., `.zshrc`):
+   ```bash
+   # Add this to your ~/.zshrc file
+   alias go='source $HOME/Documents/Projects/scaffold/go'
+   ```
 
-```bash
-source ~/.zshrc
-```
+3. **Reload your shell configuration**:
+   ```bash
+   source ~/.zshrc
+   ```
+
+This simplified approach keeps your shell configuration clean while maintaining all functionality, including directory navigation and virtual environment activation.
+
+> **Note**: The `go` command must be sourced, not executed, to allow for directory changes, which is why we use an alias that sources the script.
 
 Now you can use the shorter `go` command from anywhere:
 ```bash
 go create my_project --env
 go list
 go delete project_name
+go my_project  # This will navigate to the project
 ```
 
 ## Usage
