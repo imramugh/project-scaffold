@@ -8,6 +8,7 @@ A command-line tool to manage project folders in `~/Documents/Projects`.
 - Delete project folders with confirmation
 - Create Python 3.12 virtual environments in new project folders
 - List all existing projects
+- Quick navigation to project directories
 
 ## Installation
 
@@ -52,28 +53,40 @@ go delete project_name
 
 ## Usage
 
+### Quick Navigation to Projects
+
+The simplest way to use the tool is to just provide a project name:
+
+```bash
+go my_project
+```
+
+This will:
+- If `my_project` exists: Automatically navigate to that project directory
+- If `my_project` doesn't exist: Ask if you want to create it, and if so, ask if you want a Python virtual environment
+
 ### Create a new project
 
 ```bash
-scaffold create my_project
+go create my_project
 ```
 
 ### Create a new project with a Python 3.12 virtual environment
 
 ```bash
-scaffold create my_python_project --env
+go create my_python_project --env
 ```
 
 ### Delete a project
 
 ```bash
-scaffold delete my_project
+go delete my_project
 ```
 
 ### List all projects
 
 ```bash
-scaffold list
+go list
 ```
 
 ## Project Structure

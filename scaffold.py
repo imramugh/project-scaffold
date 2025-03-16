@@ -6,6 +6,7 @@ This tool allows users to:
 1. Create project folders with validation
 2. Delete project folders with confirmation
 3. Create Python 3.12 virtual environments in new project folders
+4. Navigate to existing project folders or offer to create them
 """
 
 import os
@@ -127,6 +128,42 @@ def delete_project(name):
         return False
 
 
+def navigate_project(name):
+    """
+    Navigate to a project folder or offer to create it if it doesn't exist.
+    
+    Args:
+        name (str): Name of the project to navigate to
+        
+    Returns:
+        int: 0 if the project exists, 1 if the project should be created, 2 if cancelled
+    """
+    project_path = os.path.join(PROJECTS_DIR, name)
+    
+    # If the project exists, return 0 to indicate we should navigate to it
+    if os.path.exists(project_path):
+        print(f"NAVIGATE_TO:{project_path}")
+        return 0
+    
+    # If the project doesn't exist, ask if we should create it
+    create = input(f"Project '{name}' does not exist. Would you like to create it? (y/N): ")
+    
+    if create.lower() not in ["y", "yes"]:
+        print("Operation cancelled.")
+        return 2
+    
+    # Ask if a virtual environment should be created
+    env = input("Would you like to create a Python 3.12 virtual environment in the project? (y/N): ")
+    env_flag = env.lower() in ["y", "yes"]
+    
+    # Create the project
+    if create_project(name, env_flag):
+        print(f"NAVIGATE_TO:{project_path}")
+        return 1
+    
+    return 2
+
+
 def main():
     """
     Main function to handle command line arguments and execute the appropriate action.
@@ -146,7 +183,16 @@ def main():
     # List projects command
     list_parser = subparsers.add_parser('list', help='List all projects')
     
+    # Navigate to project command (or create if it doesn't exist)
+    navigate_parser = subparsers.add_parser('navigate', help='Navigate to a project or create it if it doesn\'t exist')
+    navigate_parser.add_argument('name', help='Name of the project to navigate to')
+    
     args = parser.parse_args()
+    
+    # If no arguments provided, print help
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
     
     # Ensure the projects directory exists
     os.makedirs(PROJECTS_DIR, exist_ok=True)
@@ -164,6 +210,8 @@ def main():
                 print(f"  - {project}")
         else:
             print("No projects found.")
+    elif args.command == 'navigate':
+        sys.exit(navigate_project(args.name))
     else:
         parser.print_help()
 
