@@ -7,6 +7,7 @@ This tool allows users to:
 2. Delete project folders with confirmation
 3. Create Python 3.12 virtual environments in new project folders
 4. Navigate to existing project folders or offer to create them
+5. Automatically detect and activate virtual environments
 """
 
 import os
@@ -32,6 +33,35 @@ def validate_project_name(name):
     """
     project_path = os.path.join(PROJECTS_DIR, name)
     return not os.path.exists(project_path)
+
+
+def find_venv(project_path):
+    """
+    Find a virtual environment in a project folder or its subdirectories.
+    
+    Args:
+        project_path (str): Path to the project folder
+        
+    Returns:
+        str or None: Path to the virtual environment's activate script, or None if not found
+    """
+    # Check if venv exists in the project root
+    venv_path = os.path.join(project_path, "venv")
+    activate_script = os.path.join(venv_path, "bin", "activate")
+    
+    if os.path.exists(activate_script):
+        return activate_script
+    
+    # Check for venv in subdirectories (1 level deep only for performance)
+    for item in os.listdir(project_path):
+        subdir_path = os.path.join(project_path, item)
+        if os.path.isdir(subdir_path):
+            subdir_venv = os.path.join(subdir_path, "venv")
+            subdir_activate = os.path.join(subdir_venv, "bin", "activate")
+            if os.path.exists(subdir_activate):
+                return subdir_activate
+    
+    return None
 
 
 def create_project(name, env=False):
@@ -140,9 +170,14 @@ def navigate_project(name):
     """
     project_path = os.path.join(PROJECTS_DIR, name)
     
-    # If the project exists, return 0 to indicate we should navigate to it
+    # If the project exists, check for virtual environment and return path for navigation
     if os.path.exists(project_path):
-        print(f"NAVIGATE_TO:{project_path}")
+        venv_path = find_venv(project_path)
+        if venv_path:
+            print(f"NAVIGATE_TO:{project_path}")
+            print(f"ACTIVATE_VENV:{venv_path}")
+        else:
+            print(f"NAVIGATE_TO:{project_path}")
         return 0
     
     # If the project doesn't exist, ask if we should create it
@@ -158,7 +193,13 @@ def navigate_project(name):
     
     # Create the project
     if create_project(name, env_flag):
-        print(f"NAVIGATE_TO:{project_path}")
+        project_path = os.path.join(PROJECTS_DIR, name)
+        if env_flag:
+            venv_path = os.path.join(project_path, "venv", "bin", "activate")
+            print(f"NAVIGATE_TO:{project_path}")
+            print(f"ACTIVATE_VENV:{venv_path}")
+        else:
+            print(f"NAVIGATE_TO:{project_path}")
         return 1
     
     return 2
@@ -207,7 +248,10 @@ def main():
         if projects:
             print("Available projects:")
             for project in sorted(projects):
-                print(f"  - {project}")
+                project_path = os.path.join(PROJECTS_DIR, project)
+                venv_path = find_venv(project_path)
+                venv_indicator = " (has venv)" if venv_path else ""
+                print(f"  - {project}{venv_indicator}")
         else:
             print("No projects found.")
     elif args.command == 'navigate':

@@ -4,11 +4,12 @@ A command-line tool to manage project folders in `~/Documents/Projects`.
 
 ## Features
 
-- Create project folders with name validation
+- Create project folders with validation
 - Delete project folders with confirmation
 - Create Python 3.12 virtual environments in new project folders
 - List all existing projects
 - Quick navigation to project directories
+- Auto-activation of virtual environments when navigating to projects
 
 ## Installation
 
@@ -64,6 +65,7 @@ go my_project
 This will:
 - If `my_project` exists: Automatically navigate to that project directory
 - If `my_project` doesn't exist: Ask if you want to create it, and if so, ask if you want a Python virtual environment
+- If a virtual environment is found in the project directory or any subdirectory, it will be automatically activated
 
 ### Create a new project
 
