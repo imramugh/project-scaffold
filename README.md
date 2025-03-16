@@ -17,11 +17,37 @@ Make the script executable:
 chmod +x scaffold.py
 ```
 
+### Option 1: Using an alias in your shell configuration
+
 For easier access, you can add an alias to your shell configuration file (e.g., `.zshrc` or `.bashrc`):
 
 ```bash
 echo 'alias scaffold="python3 $HOME/Documents/Projects/scaffold/scaffold.py"' >> ~/.zshrc
 source ~/.zshrc
+```
+
+### Option 2: Using the "go" command (Recommended)
+
+To make the script available globally as the `go` command, add this function to your shell configuration file (e.g., `.zshrc`):
+
+```bash
+# Add this to your ~/.zshrc file
+function go {
+  python3 "$HOME/Documents/Projects/scaffold/scaffold.py" "$@"
+}
+```
+
+Then reload your shell configuration:
+
+```bash
+source ~/.zshrc
+```
+
+Now you can use the shorter `go` command from anywhere:
+```bash
+go create my_project --env
+go list
+go delete project_name
 ```
 
 ## Usage
